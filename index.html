@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wunschliste 2025/26</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #A0C55F; min-height: 100vh; padding: 2rem 1rem; }
+        .container { max-width: 32rem; margin: 0 auto; }
+        .header { margin-bottom: 2rem; }
+        .header h1 { font-size: 1.875rem; font-weight: bold; color: white; margin-bottom: 0.5rem; }
+        .header p { color: #57534e; font-size: 0.875rem; font-weight: bold; }
+        .items { display: flex; flex-direction: column; gap: 1.5rem; }
+        .item { background: white; border-radius: 0.5rem; overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border: 1px solid #e7e5e4; transition: opacity 0.3s; }
+        .item.purchased { opacity: 0.5; }
+        .item-image { position: relative; width: 100%; height: 12rem; background: #f5f5f4; }
+        .item-image img { width: 100%; height: 100%; object-fit: cover; }
+        .purchased-badge { position: absolute; top: 0.75rem; right: 0.75rem; background: #059669; color: white; font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 9999px; font-weight: 500; }
+        .item-content { padding: 1rem; }
+        .item-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem; }
+        .item-name { font-size: 1.125rem; font-weight: 500; color: #1c1917; }
+        .item-price { color: #44403c; font-weight: 500; margin-left: 0.5rem; white-space: nowrap; }
+        .price-note { font-size: 0.75rem; color: #78716c; font-style: italic; margin-bottom: 0.25rem; }
+        .item-description { font-size: 0.875rem; color: #57534e; line-height: 1.5; margin-bottom: 0.5rem; }
+        .item-priority { font-size: 0.75rem; color: #78716c; margin-bottom: 0.75rem; }
+        .item-actions { display: flex; flex-direction: column; gap: 0.5rem; }
+        .btn { display: flex; align-items: center; justify-content: center; gap: 0.375rem; padding: 0.5rem 0.75rem; border-radius: 0.25rem; font-size: 0.875rem; font-weight: 500; text-decoration: none; border: none; cursor: pointer; transition: background-color 0.2s; }
+        .btn-primary { background: #292524; color: white; }
+        .btn-primary:hover { background: #44403c; }
+        .btn-secondary { background: #57534e; color: white; }
+        .btn-secondary:hover { background: #78716c; }
+        .btn-mark { background: #f5f5f4; color: #44403c; }
+        .btn-mark:hover { background: #e7e5e4; }
+        .btn-mark.purchased { background: #d1fae5; color: #065f46; }
+        .btn-mark.purchased:hover { background: #a7f3d0; }
+        .footer { margin-top: 2rem; text-align: center; }
+        .footer p { font-size: 0.75rem; color: white; font-weight: bold; }
+        .icon { width: 0.875rem; height: 0.875rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Wunschliste</h1>
+            <p>Weihnachten & Geburtstag 2025/26</p>
+        </div>
+        <div class="items" id="items-container"></div>
+        <div class="footer">
+            <p>gekaufte Artikel markieren, damit nichts doppelt kommt 💚</p>
+        </div>
+    </div>
+    <script>
+        const items = [
+            {id: 1, name: "Korg Electribe Blue", description: "64 step Groovebox mit Synth, Sequencing, Filter - hab 3 Leute nach ner Einsteiger-Empfehlung für Elektro-Geräte gefragt, alle haben einen Monolog über das Teil gehalten! Bei Kleinanzeigen billiger, aber wichtig: inkl. Original Netzteil + Handbuch, vollständig zurückgesetzt, wenig/keine Gebrauchsspuren", price: "444", priceNote: "bei Kleinanzeigen günstiger", image: "https://cdn.korg.com/us/products/upload/5def81a3ed547e087bee1649e1f158ec.jpg", link: "https://www.thomann.de/de/korg_electribe_blue.htm", linkSecondary: "https://www.kleinanzeigen.de/s-anzeige/korg-electribe-2-blau-synthesizer-groovebox/3234878670-74-3771", priority: "high", purchased: false},
+            {id: 4, name: "beyerdynamic DT-770 Pro 32 Ohm", description: "Beyerdynamic macht top Studio-Kopfhörer, damit ist die Electribe erst zum Tracks machen nutzbar - 32 Ohm ganz wichtig!!!", price: "149", image: "https://www.kopfhoerer.de/wp-content/uploads/2019/12/Beyerdynamic-DT-770-Pro-32-Ohm-3.jpg", link: "https://www.thomann.de/de/beyerdynamic_dt_770_pro_32_ohm.htm", priority: "high", purchased: false},
+            {id: 2, name: "Thomann Bag Novation Launchkey Mini3", description: "Genau passende Maße für die Electribe - die Electribe selbst kommt leider ohne Schutzcover/Tasche o.Ä.", price: "12.30", image: "https://thumbs.static-thomann.de/thumb/padthumb600x600/pics/bdb/_49/498229/16105799_800.jpg", link: "https://www.thomann.de/de/thomann_bag_novation_launchkey_mini3.htm", priority: "medium", purchased: false},
+            {id: 3, name: "SD Karte 32GB", description: "Zum Speichern von Sequenzen und Ableton - Electribe nur mit max. 32 GB kompatibel!", price: "12.50", image: "https://thumbs.static-thomann.de/thumb/padthumb600x600/pics/bdb/_35/356476/15215448_800.jpg", link: "https://www.thomann.de/de/thomann_sd_card_32_gb_class_10.htm", priority: "medium", purchased: false},
+            {id: 5, name: "???", description: "- unbekanntes Etwas -", price: "x", image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23667eea'/%3E%3Cstop offset='1' stop-color='%23764ba2'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='300' fill='url(%23g)'/%3E%3Ctext x='200' y='150' font-size='80' fill='white' text-anchor='middle' opacity='0.3'%3E???%3C/text%3E%3Ctext x='200' y='220' font-size='20' fill='white' text-anchor='middle'%3Eunbekanntes Etwas%3C/text%3E%3C/svg%3E", link: null, priority: "low", purchased: false}
+        ];
+
+        function loadPurchasedItems() {
+            const stored = localStorage.getItem('wishlist-purchased');
+            if (stored) {
+                const purchasedIds = JSON.parse(stored);
+                items.forEach(item => { if (purchasedIds.includes(item.id)) item.purchased = true; });
+            }
+        }
+
+        function savePurchasedItems() {
+            const purchasedIds = items.filter(item => item.purchased).map(item => item.id);
+            localStorage.setItem('wishlist-purchased', JSON.stringify(purchasedIds));
+        }
+
+        function getPriorityLabel(priority) {
+            switch(priority) {
+                case 'high': return '👀☝🏻 hauptwunsch';
+                case 'medium': return '✨ würde mich freuen';
+                case 'low': return '💭 idee';
+                default: return '';
+            }
+        }
+
+        function togglePurchased(id) {
+            const item = items.find(i => i.id === id);
+            if (item) {
+                item.purchased = !item.purchased;
+                savePurchasedItems();
+                renderItems();
+            }
+        }
+
+        function renderItems() {
+            const container = document.getElementById('items-container');
+            container.innerHTML = '';
+            items.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'item' + (item.purchased ? ' purchased' : '');
+                let html = `<div class="item-image"><img src="${item.image}" alt="${item.name}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22%3E%3Crect width=%22400%22 height=%22300%22 fill=%22%23ddd%22/%3E%3Ctext x=%22200%22 y=%22150%22 font-size=%2220%22 fill=%22%23666%22 text-anchor=%22middle%22%3EBild%3C/text%3E%3C/svg%3E'">${item.purchased ? '<div class="purchased-badge">gekauft ✓</div>' : ''}</div><div class="item-content"><div class="item-header"><h3 class="item-name">${item.name}</h3><span class="item-price">€${item.price}</span></div>${item.priceNote ? `<p class="price-note">${item.priceNote}</p>` : ''}<p class="item-description">${item.description}</p><div class="item-priority">${getPriorityLabel(item.priority)}</div><div class="item-actions">`;
+                if (item.link) html += `<a href="${item.link}" target="_blank" rel="noopener noreferrer" class="btn btn-primary"><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg><span>zum Shop</span></a>`;
+                if (item.linkSecondary) html += `<a href="${item.linkSecondary}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary"><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg><span>Kleinanzeigen</span></a>`;
+                html += `<button class="btn btn-mark${item.purchased ? ' purchased' : ''}" onclick="togglePurchased(${item.id})">${item.purchased ? 'gekauft' : 'markieren'}</button></div></div>`;
+                itemDiv.innerHTML = html;
+                container.appendChild(itemDiv);
+            });
+        }
+
+        loadPurchasedItems();
+        renderItems();
+    </script>
+</body>
+</html>
